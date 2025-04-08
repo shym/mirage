@@ -434,6 +434,7 @@ module Unikraft = struct
    (_
     (flags :standard -cclib "-z unikraft-backend=%s")
     (c_flags :standard -z unikraft-backend=%s)
+    ; Is the following still required now?
     (env-vars
      ("LWT_DISCOVER_ARGUMENTS" "--use-libev false --libev-default false"))))
   (merlin)
@@ -446,6 +447,7 @@ module Unikraft = struct
     [ build_context ]
 
   let ext = function
+    (* Why should we fix this extension? *)
     | `Firecracker -> ".fc" (* FIXME *)
     | `QEMU -> ".qemu"
     | _ -> invalid_arg "Unikraft bindings only defined for Unikraft targets"
