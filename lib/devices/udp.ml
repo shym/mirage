@@ -26,7 +26,7 @@ let udpv4v6_socket_conf ~ipv4_only ~ipv6_only ipv4_key ipv6_key =
   let packages_v = right_tcpip_library ~sublibs:[ "udpv4v6-socket" ] "tcpip" in
   let configure i =
     match get_target i with
-    | `Unix | `MacOSX | #Key.mode_unikraft -> Action.ok ()
+    | `Unix | `MacOSX -> Action.ok ()
     | _ -> Action.error "UDPv4v6 socket not supported on non-UNIX targets."
   in
   let connect _ modname = function
