@@ -444,8 +444,7 @@ module Unikraft = struct
     [ build_context ]
 
   let ext = function
-    (* Why should we fix this extension? *)
-    | `Firecracker -> ".fc" (* FIXME *)
+    | `Firecracker -> ".fc"
     | `QEMU -> ".qemu"
     | _ -> invalid_arg "Unikraft bindings only defined for Unikraft targets"
 
