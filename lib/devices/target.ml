@@ -433,10 +433,7 @@ module Unikraft = struct
   (env
    (_
     (flags :standard -cclib "-z unikraft-backend=%s")
-    (c_flags :standard -z unikraft-backend=%s)
-    ; Is the following still required now?
-    (env-vars
-     ("LWT_DISCOVER_ARGUMENTS" "--use-libev false --libev-default false"))))
+    (c_flags :standard -z unikraft-backend=%s)))
   (merlin)
   (disable_dynamically_linked_foreign_archives true)))
 |}
