@@ -89,13 +89,12 @@ let generic_ipv4v6_stack p ?group ?ipv6_config ?ipv4_config ?(arp = arp) ?tcp
   in
   keyed_direct_stackv4v6 ~ipv4_only ~ipv6_only ?tcp tap e a i4 i6
 
-let socket_extra_stackv4v6 ?(group = "") ?(extra_packages_v = Key.pure []) () =
+let socket_stackv4v6 ?(group = "") () =
   let v4key = Runtime_arg.V4.network ~group Ipaddr.V4.Prefix.global in
   let v6key = Runtime_arg.V6.network ~group None in
   let ipv4_only = Runtime_arg.ipv4_only ~group () in
   let ipv6_only = Runtime_arg.ipv6_only ~group () in
   let packages_v = right_tcpip_library ~sublibs:[ "stack-socket" ] "tcpip" in
-  let packages_v = Key.(pure ( @ ) $ packages_v $ extra_packages_v) in
   let extra_deps =
     [
       dep (udpv4v6_socket_conf ~ipv4_only ~ipv6_only v4key v6key);
@@ -108,8 +107,6 @@ let socket_extra_stackv4v6 ?(group = "") ?(extra_packages_v = Key.pure []) () =
   in
   impl ~packages_v ~extra_deps ~connect "Tcpip_stack_socket.V4V6" stackv4v6
 
-let socket_stackv4v6 ?group () = socket_extra_stackv4v6 ?group ()
-
 (** Generic stack *)
 let generic_stackv4v6 ?group ?ipv6_config ?ipv4_config
     ?(dhcp_key = Key.value @@ Key.dhcp ?group ())
@@ -118,21 +115,12 @@ let generic_stackv4v6 ?group ?ipv6_config ?ipv4_config
   let choose target net dhcp =
     match (target, net, dhcp) with
     | `Qubes, _, _ -> `Qubes
-    | `QEMU, Some `Host, _ | `Firecracker, Some `Host, _ -> `SocketLwIP
     | _, Some `Host, _ -> `Socket
     | _, _, true -> `Dhcp
     | (`Unix | `MacOSX), None, false -> `Socket
     | _, _, _ -> `Static
   in
-  let unikraft_lwip_package_v =
-    Key.pure [ package ~scope:`Switch "ocaml-unikraft-option-lwip" ]
-  in
   let p = Key.(pure choose $ Key.(value target) $ net_key $ dhcp_key) in
   match_impl p
-    [
-      (`Socket, socket_stackv4v6 ?group ());
-      ( `SocketLwIP,
-        socket_extra_stackv4v6 ?group ~extra_packages_v:unikraft_lwip_package_v
-          () );
-    ]
+    [ (`Socket, socket_stackv4v6 ?group ()) ]
     ~default:(generic_ipv4v6_stack p ?group ?ipv6_config ?ipv4_config ?tcp tap)
