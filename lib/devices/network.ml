@@ -22,8 +22,7 @@ let network_conf ?(intf : string runtime_arg option) name =
     | #Key.mode_unikraft ->
         [
           package ~min:"0.0.1" ~max:"2.0.0" "mirage-net-unikraft";
-          package ~scope:`Switch ~build:true ~libs:[]
-            "ocaml-unikraft-option-ocaml-net-stack";
+          package ~scope:`Switch "ocaml-unikraft-option-ocaml-net-stack";
         ]
   in
   let connect _ modname = function
@@ -36,6 +35,7 @@ let network_conf ?(intf : string runtime_arg option) name =
     ok ()
   in
   impl ~runtime_args ~packages_v ~connect ~configure "Netif" network
+
 let netif ?group dev =
   if_impl Key.is_solo5 (network_conf dev)
     (network_conf ~intf:(Runtime_arg.interface ?group dev) dev)

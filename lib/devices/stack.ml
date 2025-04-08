@@ -125,10 +125,7 @@ let generic_stackv4v6 ?group ?ipv6_config ?ipv4_config
     | _, _, _ -> `Static
   in
   let unikraft_lwip_package_v =
-    Key.pure
-      [
-        package ~scope:`Switch ~build:true ~libs:[] "ocaml-unikraft-option-lwip";
-      ]
+    Key.pure [ package ~scope:`Switch "ocaml-unikraft-option-lwip" ]
   in
   let p = Key.(pure choose $ Key.(value target) $ net_key $ dhcp_key) in
   match_impl p
